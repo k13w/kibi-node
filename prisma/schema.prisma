@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  discordId String
+  username String  @unique
+  points Point[]
+  @@map(name: "user")
+}
+
+model Point {
+  id       Int      @id @default(autoincrement())
+  userId   String @db.Uuid
+  user     User     @relation(fields: [userId], references: [id])
+  value    Int
+  @@map(name: "point")
+}

@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - "7200:5432"
+    environment:
+      - POSTGRES_USER=kibi
+      - POSTGRES_PASSWORD=kibi
+      - POSTGRES_DB=kibi
+    networks:
+      - dev
+
+networks:
+  dev:
