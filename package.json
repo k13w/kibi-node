@@ -5,7 +5,7 @@
   "main": "src/main.ts",
   "scripts": {
     "build": "rimraf ./build && tsc",
-    "start": "npm run build && node build/main.js",
+    "start": "npm run build && node build/src/main.js",
     "migrate-prod": "npx prisma deploy",
     "deploy": "npm run migrate-prod && npm run start",
     "start:dev": "npx nodemon",
