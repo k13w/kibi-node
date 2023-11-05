@@ -17,7 +17,7 @@ export async function execute(interaction: CommandInteraction) {
                     username
                 },
                 data: {
-                    lostSiege: "1"
+                    lostSiege: 1
                 },
             });
             await prisma.$disconnect();

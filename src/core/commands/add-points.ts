@@ -1,48 +1,90 @@
-import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
+import {
+  ActionRowBuilder,
+  CommandInteraction,
+  SlashCommandBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
+  ComponentType
+} from 'discord.js';
 import { PrismaClient } from '@prisma/client';
 
 export const data = new SlashCommandBuilder()
-  .setName('add')
+  .setName('addpoints')
   .setDescription('Adicionar pontos para um usuario.')
-  .addStringOption((option) =>
-    option
-      .setName('input')
-      .setDescription('Escolha a pessoa para adicionar os pontos')
-      .setRequired(true)
-      .addChoices({ name: 'Bibi', value: 'bi' }, { name: 'Kiki', value: 'ki' }),
-  )
-  .addIntegerOption((option) => option.setName('amount').setDescription('Quantidade de pontos a adicionar').setRequired(true));
 
 export async function execute(interaction: CommandInteraction) {
-  const globalName = interaction.user.globalName;
-  const username = interaction.user.username;
-  const points = interaction.options.data[1].value;
-
-  const parserPoints = Number(points);
-
-  if (points) {
+  try {
+    const username = interaction.user.username;
     const prisma = new PrismaClient();
 
-    const user = await prisma.user.findUnique({
-      where: { username },
+    const users = await prisma.user.findMany({
+      where: {username},
     });
 
-    if (!user) {
-      console.error('Usuário não encontrado');
-      return;
+    const selectMenu = new StringSelectMenuBuilder()
+
+    selectMenu
+        .setCustomId(interaction.id)
+        .setPlaceholder("Selecion o usuario")
+        .addOptions(users.map(user =>
+            new StringSelectMenuOptionBuilder()
+                .setLabel(user.username)
+                .setValue(String(user.points))
+        ))
+
+    const actionRow: any = new ActionRowBuilder().addComponents(selectMenu)
+
+    const reply = await interaction.reply({
+      components: [actionRow]
+    })
+
+    const collector = reply.createMessageComponentCollector({
+      componentType: ComponentType.StringSelect,
+      filter: (i) => i.user.id === interaction.user.id && i.customId === interaction.id,
+      time: 10_000
+    })
+
+    collector.on('collect', async (interaction) => {
+      await interaction.reply({
+        content: "Insira quantos pontos você deseja adicionar (digite um número)",
+      });
+
+      try {
+        const prisma  = new PrismaClient();
+
+        const user = await prisma.user.findUnique({
+          where: {username},
+        });
+
+        if (!user) {
+          console.log("user not found")
+        }
+
+        const pointsToAdd = parseInt(String(10), 10);
+
+        if (isNaN(pointsToAdd)) {
+          console.log("numero invalido")
+        }
+
+        const updatedUser = await prisma.user.update({
+          where: {username},
+          data: {
+            points: {
+              decrement: pointsToAdd,
+            },
+          },
+        });
+
+        const response = `Adicionou ${pointsToAdd} pontos para ${username}. Total de pontos agora: ${updatedUser.points}.`;
+
+        await interaction.followUp({
+          content: response
+        });
+      } catch (e) {
+        console.log(e)
+      }
+      })
+    } catch (e) {
+    console.log(e)
     }
-
-    await prisma.point.create({
-      data: {
-        userId: user.id,
-        value: parserPoints,
-      },
-    });
-
-    const response = `Adicionou ${points} pontos para ${globalName}.`;
-
-    return interaction.reply(response);
-  } else {
-    return interaction.reply('Por favor, forneça as opções corretamente.');
   }
-}
