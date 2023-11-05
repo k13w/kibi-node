@@ -1,10 +1,10 @@
-import { Client } from 'discord.js';
-import { config } from './config';
-import { commands } from './commands';
+import { Client, GatewayIntentBits } from 'discord.js';
+import { config } from './config/config';
+import { commands } from './core/commands';
 import { deployCommands } from './deploy-commands';
 
 export const client = new Client({
-  intents: ['Guilds', 'GuildMessages', 'DirectMessages'],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildBans, GatewayIntentBits.DirectMessages],
 });
 
 client.once('ready', () => {

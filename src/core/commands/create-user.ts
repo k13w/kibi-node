@@ -15,6 +15,7 @@ export async function execute(interaction: CommandInteraction) {
         data: {
           discordId: String(discordId),
           username,
+          lostSiege: ""
         },
       });
 

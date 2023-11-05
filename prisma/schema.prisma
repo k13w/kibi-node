@@ -10,6 +10,7 @@ datasource db {
 model User {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   discordId String
+  lostSiege String
   username String  @unique
   points Point[]
   @@map(name: "user")
@@ -21,4 +22,10 @@ model Point {
   user     User     @relation(fields: [userId], references: [id])
   value    Int
   @@map(name: "point")
+}
+
+model Watchlist {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String  @unique
+  @@map(name: "watchlist")
 }
