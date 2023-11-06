@@ -10,18 +10,10 @@ datasource db {
 model User {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   discordId String
-  lostSiege String
+  lostSiege Int
   username String  @unique
-  points Point[]
+  points Int
   @@map(name: "user")
-}
-
-model Point {
-  id       Int      @id @default(autoincrement())
-  userId   String @db.Uuid
-  user     User     @relation(fields: [userId], references: [id])
-  value    Int
-  @@map(name: "point")
 }
 
 model Watchlist {
