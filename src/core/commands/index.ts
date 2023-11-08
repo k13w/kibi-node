@@ -14,11 +14,11 @@ interface Commands {
 };
 
 export const commands: Commands = {
-  addpoints: addPoints,
-  removepoints: removePoints,
+  // addpoints: addPoints,
+  // removepoints: removePoints,
   createuser: createUser,
   addtowatchlist: addToWatchList,
   lostsiege: lostSiege,
   watchlist: watchlist,
-  points: points,
+  // points: points,
 };
